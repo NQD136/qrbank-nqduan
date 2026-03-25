@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nqduan | Tạo Mã QR VietQR</title>
+  <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/no401z.jpg" />
+  <link rel="shortcut icon" type="image/jpeg" href="https://files.catbox.moe/no401z.jpg" />
+  <link rel="apple-touch-icon" href="https://files.catbox.moe/no401z.jpg" />
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    :root{
+      --bg:#07111f;--panel:#0d1b2a;--line:rgba(255,255,255,.10);--text:#eff6ff;--muted:#9fb3c8;
+      --brand:#4f9cff;--brand-2:#7c4dff;--ok:#1ec98b;--danger:#ff6b6b;--shadow:0 18px 50px rgba(0,0,0,.28);--radius:24px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at top,#132946 0%,#07111f 55%,#050b14 100%);color:var(--text);overflow-x:hidden}
+    body{min-height:100vh}
+    .wrap{max-width:1180px;margin:0 auto;padding:20px 14px 48px;overflow-x:hidden}
+    .hero{padding:22px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(79,156,255,.16),rgba(124,77,255,.12));border-radius:28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;inset:auto -20% -45% auto;width:280px;height:280px;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 60%);pointer-events:none;filter:blur(6px)}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(255,255,255,.04);color:#dce9ff;font-size:13px}
+    h1{margin:14px 0 8px;font-size:clamp(28px,4vw,42px);line-height:1.08}
+    .neon-title{
+      position:relative;
+      display:block;
+      font-weight:900;
+      letter-spacing:.01em;
+      background:linear-gradient(90deg,#7cc8ff 0%, #9b8cff 20%, #ff8fd8 40%, #8fffd8 60%, #7cc8ff 80%, #7cc8ff 100%);
+      background-size:300% 100%;
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation:colorWave 4s ease-in-out infinite;
+    }
+    .lead{margin:0;color:var(--muted);font-size:15px;line-height:1.65;max-width:920px}
+    .grid{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);gap:18px;margin-top:18px}
+    .card{background:rgba(10,22,37,.86);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;min-width:0}
+    .card:hover{transform:translateY(-3px);box-shadow:0 24px 56px rgba(0,0,0,.34);border-color:rgba(79,156,255,.18)}
+    .card .head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:18px 18px 0}
+    .card .head h2{margin:0;font-size:18px}
+    .card .body{padding:18px}
+    .form-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+    .field{display:flex;flex-direction:column;gap:8px;min-width:0;align-items:stretch}
+    .field.full{grid-column:1/-1}
+    .label{font-size:13px;color:#cfe0f5;font-weight:700}
+    input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.12);background:#0b1726;color:var(--text);border-radius:16px;padding:14px;font-size:15px;outline:none;transition:.22s border-color,.22s box-shadow,.22s transform,.22s background;height:100%}
+    input:hover,select:hover,textarea:hover{transform:translateY(-1px);border-color:rgba(79,156,255,.24);background:#0d1b2d}
+    textarea{min-height:92px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:rgba(79,156,255,.75);box-shadow:0 0 0 4px rgba(79,156,255,.12)}
+    .hint{font-size:12px;color:var(--muted);line-height:1.5}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+    button{border:0;border-radius:16px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s transform,.2s opacity,.2s box-shadow}
+    button:hover{transform:translateY(-1px)}
+    .primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:0 12px 28px rgba(79,156,255,.24)}
+    .ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.10)}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:12px;color:#d9e6f7}
+
+    .bank-picker{position:relative}
+    .bank-display{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:#0b1726;color:var(--text);cursor:pointer;min-height:56px;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease}
+    .bank-display:hover{transform:translateY(-1px);border-color:rgba(79,156,255,.26);background:#0d1b2d;box-shadow:0 10px 24px rgba(0,0,0,.18)}
+    .bank-display:focus-visible{outline:none;border-color:rgba(79,156,255,.75);box-shadow:0 0 0 4px rgba(79,156,255,.12)}
+    .bank-display-main{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+    .bank-display-main img{width:33px;height:33px;padding:4px;border-radius:10px;object-fit:contain;background:#fff;flex:0 0 auto;box-sizing:border-box;overflow:hidden}
+    .bank-display-text{min-width:0;display:flex;flex-direction:column}
+    .bank-display-text strong,.bank-display-text span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bank-display-text strong{font-size:15px}
+    .bank-display-text span{font-size:12px;color:var(--muted)}
+    .placeholder{color:#9fb3c8}
+    .bank-caret,.template-caret{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;color:#d8e6f7;transition:.22s transform,.22s opacity;opacity:.9;flex:0 0 auto}
+    .bank-picker.open .bank-caret{transform:rotate(180deg)}
+    
+    .bank-caret svg,.template-caret svg{width:18px;height:18px;display:block}
+    .bank-caret path,.template-caret path{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+    .bank-dropdown{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:20;background:#0d1b2a;border:1px solid rgba(255,255,255,.12);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.35);display:none;overflow:hidden}
+    .bank-picker.open .bank-dropdown{display:block}
+    .bank-search-wrap{padding:12px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+    .bank-options{max-height:320px;overflow-y:auto;scrollbar-width:none}
+    .bank-options::-webkit-scrollbar{display:none}
+    .bank-option{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;border:0;background:transparent;color:var(--text);text-align:left;border-bottom:1px solid rgba(255,255,255,.08);border-radius:0}
+    .bank-option:last-child{border-bottom:0}
+    .bank-option:hover{background:rgba(79,156,255,.08);transform:none}
+    .bank-option.selected{background:rgba(79,156,255,.12)}
+    .bank-option img{width:33px;height:33px;padding:4px;border-radius:10px;object-fit:contain;background:#fff;flex:0 0 auto;box-sizing:border-box;overflow:hidden}
+    .bank-option-text{min-width:0;display:flex;flex-direction:column}
+    .bank-option-text strong{font-size:14px}
+    .bank-option-text span{font-size:12px;color:var(--muted);line-height:1.4}
+    .bank-empty{padding:16px;color:var(--muted);text-align:center}
+
+
+    .template-picker{position:relative}
+    .template-display{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:#0b1726;color:var(--text);cursor:pointer;min-height:56px;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease}
+    .template-display:hover{transform:translateY(-1px);border-color:rgba(79,156,255,.26);background:#0d1b2d;box-shadow:0 10px 24px rgba(0,0,0,.18)}
+    .template-display:focus-visible{outline:none;border-color:rgba(79,156,255,.75);box-shadow:0 0 0 4px rgba(79,156,255,.12)}
+    .template-display-main{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+    
+    .template-picker.open .template-caret{transform:rotate(180deg)}
+    .template-dropdown{position:absolute;left:0;right:0;bottom:calc(100% + 8px);z-index:1000;background:#0d1b2a;border:1px solid rgba(255,255,255,.12);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.35);display:none;overflow:hidden}
+    .template-picker.open .template-dropdown{display:block}
+    .template-options{max-height:260px;overflow:auto}
+    .template-option{width:100%;display:flex;align-items:center;gap:0;padding:12px 14px;border:0;background:transparent;color:var(--text);text-align:left;border-bottom:1px solid rgba(255,255,255,.08);border-radius:0}
+    .template-option:last-child{border-bottom:0}
+    .template-option:hover{background:rgba(79,156,255,.08);transform:none}
+    .template-option.selected{background:rgba(79,156,255,.12)}
+    .template-option-text{min-width:0;flex:1;display:flex;flex-direction:column}
+    .template-option-text strong{font-size:14px}
+    .template-option-text span{font-size:12px;color:var(--muted);line-height:1.4}
+
+    .result-panel{display:none}
+    .result-panel.show{display:block;animation:fadeUp .35s ease}
+    .result-empty{width:100%;padding:18px;border:1px dashed rgba(255,255,255,.14);border-radius:20px;background:rgba(255,255,255,.025);text-align:center;color:var(--muted);line-height:1.65}
+    .qr-shell{display:flex;flex-direction:column;gap:16px;align-items:center;width:100%}
+    .qr-box{width:min(100%,370px);aspect-ratio:1/1.04;border-radius:24px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#eef5ff);display:flex;align-items:center;justify-content:center;padding:16px;position:relative;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.18)}
+    .qr-box img{max-width:100%;max-height:100%;object-fit:contain;border-radius:18px;display:block;position:relative;z-index:1}
+    .qr-scan-line{position:absolute;left:6%;right:6%;height:3px;border-radius:999px;background:linear-gradient(90deg,transparent,rgba(0,174,255,.9),transparent);box-shadow:0 0 18px rgba(0,174,255,.45);animation:scan 2.4s linear infinite;z-index:2}
+    .result-meta{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .info-card{display:flex;align-items:stretch;gap:10px;padding:10px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);min-width:0;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease}
+    .info-card:hover{transform:translateY(-2px);border-color:rgba(79,156,255,.2);background:rgba(255,255,255,.045);box-shadow:0 12px 26px rgba(0,0,0,.18)}
+    .info-content{min-width:0;flex:1;display:flex;flex-direction:column;gap:8px}
+    .info-label{font-size:12px;color:#b8cae0;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+    .info-value{min-height:44px;display:flex;align-items:center;padding:11px 12px;border-radius:14px;background:#0b1726;border:1px solid rgba(255,255,255,.08);font-size:14px;line-height:1.42;color:#eff6ff;min-width:0}
+    .info-value.compact{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .copy-btn{position:relative;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;border-radius:14px;background:linear-gradient(180deg,#16263d,#101d31);color:#dce9ff;border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px rgba(0,0,0,.22);padding:0;flex:0 0 auto}
+    .copy-btn::before{content:"";position:absolute;inset:-120% 32% auto auto;width:42%;height:260%;transform:rotate(24deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);opacity:0;transition:opacity .25s,transform .45s}
+    .copy-btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 20px rgba(0,0,0,.28)}
+    .copy-btn:hover::before,.copy-btn.copied::before{opacity:1;transform:translateX(-180%) rotate(24deg)}
+    .copy-btn svg{width:20px;height:20px;position:relative;z-index:1;transition:.25s transform,.22s opacity}
+    .copy-btn .check-icon{position:absolute;opacity:0;transform:scale(.7)}
+    .copy-btn.copied{border-color:rgba(30,201,139,.55);background:linear-gradient(180deg,#153828,#102a1f);color:#d9ffed}
+    .copy-btn.copied .copy-icon{opacity:0;transform:scale(.7)}
+    .copy-btn.copied .check-icon{opacity:1;transform:scale(1)}
+    .copy-btn.copied .check-icon path:first-child{fill:#22c55e}
+    .copy-btn.copied .check-icon path:last-child{fill:#fff}
+
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;min-width:0;align-items:stretch}
+    .search{flex:1;min-width:0}
+    .app-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .app-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03);text-decoration:none;color:var(--text);transition:.22s transform,.22s border-color,.22s background,.22s box-shadow;min-width:0}
+    .app-item:hover{transform:translateY(-3px);border-color:rgba(79,156,255,.45);background:rgba(79,156,255,.08);box-shadow:0 14px 28px rgba(0,0,0,.2)}
+    
+    .app-item img{width:42px;height:42px;border-radius:12px;object-fit:cover;background:#fff;flex:0 0 auto}
+    .app-item .name{font-size:clamp(12px,1.2vw,13px);font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+    .app-item .bank{font-size:clamp(10px,0.7vw,11px);color:var(--muted);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-width:0;word-break:break-word}
+    .status{margin-top:10px;padding:12px 14px;border-radius:14px;font-size:14px;line-height:1.55;display:none}
+    .status.ok{display:block;background:rgba(30,201,139,.10);border:1px solid rgba(30,201,139,.24);color:#c6ffe8}
+    .status.err{display:block;background:rgba(255,107,107,.10);border:1px solid rgba(255,107,107,.24);color:#ffd0d0}
+    .footer-note{margin-top:12px;color:var(--muted);font-size:12px;line-height:1.7}
+    @keyframes ledRun{0%{background-position:0% 50%}100%{background-position:220% 50%}}
+    @keyframes ledSweep{0%{background-position:140% 50%}100%{background-position:-120% 50%}}
+    @keyframes colorWave{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    [hidden]{display:none!important}
+    @keyframes scan{0%{top:8%}100%{top:90%}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @media (max-width:1200px){.app-list{grid-template-columns:repeat(4,1fr)}}
+    @media (max-width:960px){.grid{grid-template-columns:1fr}.app-list{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){
+      .wrap{padding:14px 10px 34px}
+      .hero,.card .body{padding:14px}
+      .card .head{padding:14px 14px 0;flex-wrap:wrap;align-items:flex-start}
+      .form-grid{grid-template-columns:1fr}
+      .result-meta{grid-template-columns:1fr}
+      .app-list{grid-template-columns:1fr;gap:10px}
+      h1{font-size:30px;line-height:1.15;word-break:break-word}
+      .lead{font-size:14px}
+      .copy-btn{width:42px;height:42px}
+      .actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+      .actions button{width:100%;padding:12px 8px;font-size:13px;line-height:1.25;min-height:48px;border-radius:14px}
+      .bank-display,.template-display,input,select,textarea{min-width:0}
+      .toolbar{flex-direction:column}
+      .toolbar > *{width:100%}
+      .app-item{padding:10px;gap:10px;align-items:center}
+      .app-item img{width:38px;height:38px;border-radius:10px}
+      .app-item .name{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+      .app-item .bank{-webkit-line-clamp:2}
+    }
+    @media (max-width:420px){
+      .wrap{padding-inline:8px}
+      .hero{border-radius:22px}
+      .card{border-radius:20px}
+      .bank-display,.template-display,input,select,textarea{padding:13px 12px;border-radius:15px}
+      .actions{grid-template-columns:1fr}
+      .app-list{grid-template-columns:1fr}
+      .qr-box{width:min(100%,320px);padding:12px;border-radius:20px}
+      .info-card{padding:9px;gap:8px}
+    }
+    .copyright{margin-top:18px;padding:14px;text-align:center;color:var(--muted);font-size:12px;line-height:1.4;border-top:1px solid var(--line)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">⚡ Tạo mã QR chuyển khoản VietQR - Nhanh - Tiện Lợi</div>
+      <h1 class="neon-title" data-text="Tạo mã QR chuyển khoản VietQR">Tạo mã QR chuyển khoản VietQR</h1>
+      <p class="lead">Hỗ trợ nhiều ngân hàng và ứng dụng thanh toán. Tích hợp nhiều loại mã QR. Tích hợp tính năng mở app ngân hàng nhanh</p>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <div class="head">
+          <h2>Thông tin tạo QR</h2>
+          <span class="pill" id="bankCountPill">Đang tải danh sách ngân hàng...</span>
+        </div>
+        <div class="body">
+          <input id="bank" type="hidden" value="" />
+          <div class="form-grid">
+            <div class="field full">
+              <label class="label">Tên ngân hàng</label>
+              <div class="bank-picker" id="bankPicker">
+                <button type="button" class="bank-display" id="bankDisplay" aria-expanded="false">
+                  <div class="bank-display-main" id="bankDisplayMain"><div class="placeholder">Chọn ngân hàng</div></div>
+                  <div class="bank-caret" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M5.25 7.75 10 12.25l4.75-4.5"/></svg></div>
+                </button>
+                <div class="bank-dropdown" id="bankDropdown">
+                  <div class="bank-search-wrap"><input id="bankSearch" type="text" placeholder="Tìm tên ngân hàng trong danh sách..." /></div>
+                  <div class="bank-options" id="bankOptions"></div>
+                </div>
+              </div>
+              <div class="hint">Tích hợp nhiều ngân hàng. Hỗ trợ tìm kiếm nhanh. Có tích hợp logo để dễ nhận biết các ngân hàng.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="accountNo">Số tài khoản</label>
+              <input id="accountNo" type="text" inputmode="numeric" placeholder="Ví dụ: 1051375223" />
+            </div>
+
+            <div class="field">
+              <label class="label" for="accountName">Tên chủ tài khoản</label>
+              <input id="accountName" type="text" placeholder="Ví dụ: NGO QUANG DUAN" />
+            </div>
+
+            <div class="field">
+              <label class="label" for="amount">Số tiền</label>
+              <input id="amount" type="text" inputmode="numeric" placeholder="Ví dụ: 50000" />
+            </div>
+            
+
+            <div class="field">
+              <label class="label">Mẫu QR</label>
+              <input id="template" type="hidden" value="compact2" />
+              <div class="template-picker" id="templatePicker">
+                <button type="button" class="template-display" id="templateDisplay" aria-expanded="false">
+                  <div class="template-display-main" id="templateDisplayMain">compact2</div>
+                  <div class="template-caret" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M5.25 7.75 10 12.25l4.75-4.5"/></svg></div>
+                </button>
+                <div class="template-dropdown" id="templateDropdown">
+                  <div class="template-options" id="templateOptions">
+                    <button type="button" class="template-option selected" data-template-value="compact2"><div class="template-option-text"><strong>compact2</strong><span>QR + thông tin nhỏ gọn</span></div></button>
+                    <button type="button" class="template-option" data-template-value="compact"><div class="template-option-text"><strong>compact</strong><span>QR với nội dung tối thiểu</span></div></button>
+                    <button type="button" class="template-option" data-template-value="qr_only"><div class="template-option-text"><strong>qr_only</strong><span>Chỉ mã QR</span></div></button>
+                    <button type="button" class="template-option" data-template-value="print"><div class="template-option-text"><strong>print</strong><span>Bản in đầy đủ</span></div></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label class="label" for="addInfo">Nội dung chuyển khoản</label>
+              <textarea id="addInfo" placeholder="Ví dụ: DONATE FOR ME"></textarea>
+            </div>
+          </div><br />
+          <div class="label"> Số tiền & nội dung chuyển khoản có thể để trống</div>
+
+          <div class="actions">
+            <button class="primary" id="generateBtn" type="button">Tạo mã QR</button>
+            <button class="ghost" id="fillDemoBtn" type="button">Điền thử dữ liệu mẫu</button>
+            <button class="ghost" id="clearBtn" type="button">Xóa dữ liệu</button>
+          </div>
+
+          <div id="formStatus" class="status"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="head">
+          <h2>Kết quả</h2>
+          <span class="pill">Ảnh QR + Thông Tin Chi Tiết</span>
+        </div>
+        <div class="body">
+          <div class="result-empty" id="resultEmpty">Chưa có kết quả. Hãy nhập thông tin rồi bấm <b>Tạo mã QR</b>.</div>
+          <div class="result-panel" id="resultPanel">
+            <div class="qr-shell">
+              <div class="qr-box">
+                <div class="qr-scan-line"></div>
+                <img id="qrImage" alt="QR VietQR" />
+              </div>
+              <div class="result-meta" id="resultMeta"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:18px;">
+      <div class="head">
+        <h2>Mở app ngân hàng</h2>
+        <span class="pill" id="appCountPill">Đang tải app...</span>
+      </div>
+      <div class="body">
+        <div class="toolbar">
+          <input id="appSearch" class="search" type="text" placeholder="Tìm app hoặc ngân hàng..." />
+          <button class="ghost" id="openSelectedAppBtn" type="button">Mở app theo ngân hàng đã chọn</button>
+        </div>
+        <div id="appList" class="app-list"></div>
+      </div>
+    </section>
+
+    <div class="copyright">
+      © 2026 - Nqduan. Cám ơn bạn đã sử dụng dịch vụ
+    </div>
+  </div>
+
+  <script>
+    // Chống F12 và DevTools
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J' || e.key === 'K'))) {
+        e.preventDefault();
+      }
+    });
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    const $ = (id) => document.getElementById(id);
+    const state = { banks: [], apps: [], lastQR: '' };
+    const DEFAULT_BANK_LOGO = 'https://files.catbox.moe/no401z.jpg';
+
+    function escapeHtml(value=''){
+      return String(value)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+    function findMatchingAppLogo(bank){
+      if(!bank || !Array.isArray(state.apps) || !state.apps.length) return '';
+      const short = normalizeText(bank.shortName || '');
+      const code = normalizeText(bank.code || '');
+      const full = normalizeText(bank.name || '');
+      const matched = state.apps.find(app => {
+        const hay = normalizeText(`${app.appName || ''} ${app.bankName || ''} ${app.appId || ''}`);
+        return (short && hay.includes(short)) || (code && hay.includes(code)) || (full && hay.includes(full));
+      });
+      return matched?.appLogo || '';
+    }
+    function getBankLogo(bank){
+      if(!bank) return DEFAULT_BANK_LOGO;
+      return findMatchingAppLogo(bank) || bank.logo || bank.logoUrl || bank.icon || DEFAULT_BANK_LOGO;
+    }
+    function handleBankLogoError(img){
+      if(!img) return;
+      if(img.dataset.fallbackApplied === '1') return;
+      img.dataset.fallbackApplied = '1';
+      img.src = DEFAULT_BANK_LOGO;
+    }
+
+    function showStatus(message, type='ok'){
+      const box = $('formStatus');
+      box.className = `status ${type}`;
+      box.textContent = message;
+    }
+
+    function normalizeText(str=''){
+      return String(str).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+    }
+    function formatMoney(value){
+      const n = String(value || '').replace(/\D/g,'');
+      if(!n) return '';
+      return Number(n).toLocaleString('vi-VN') + ' đ';
+    }
+    function sanitizeNumeric(value){ return String(value || '').replace(/\D/g,''); }
+    function getSelectedBank(){ return state.banks.find(b => String(b.id) === String($('bank').value)) || null; }
+    function getRecipientBankId(bank){
+      if(!bank) return '';
+      const candidates = [bank.shortName, bank.code, bank.bin].filter(Boolean);
+      return String(candidates[0]).replace(/\s+/g,'');
+    }
+    function buildQRUrl(bank, accountNo, amount, addInfo, accountName, template){
+      const params = new URLSearchParams();
+      if(amount) params.set('amount', amount);
+      if(addInfo) params.set('addInfo', addInfo);
+      if(accountName) params.set('accountName', accountName);
+      return `https://img.vietqr.io/image/${encodeURIComponent(getRecipientBankId(bank))}-${encodeURIComponent(accountNo)}-${encodeURIComponent(template)}.png?${params.toString()}`;
+    }
+    function buildAppLink(app, bank, accountNo, amount, addInfo, accountName){
+      const base = app.deeplink || `https://dl.vietqr.io/pay?app=${encodeURIComponent(app.appId || '')}`;
+      try{
+        const url = new URL(base);
+        if (bank && accountNo) url.searchParams.set('ba', `${accountNo}@${getRecipientBankId(bank)}`);
+        if (amount) url.searchParams.set('am', amount);
+        if (addInfo) url.searchParams.set('tn', addInfo);
+        if (accountName) url.searchParams.set('bn', accountName);
+        return url.toString();
+      }catch{ return base; }
+    }
+
+    async function copyText(text, button){
+      if(!text) return;
+      try{
+        await navigator.clipboard.writeText(text);
+        if(button){
+          button.classList.remove('copied');
+          void button.offsetWidth;
+          button.classList.add('copied');
+          clearTimeout(button._copiedTimer);
+          button._copiedTimer = setTimeout(() => button.classList.remove('copied'), 1200);
+        }
+        showStatus('Đã copy vào clipboard.', 'ok');
+      }catch{
+        showStatus('Không copy tự động được. Trình duyệt có thể đang chặn quyền clipboard.', 'err');
+      }
+    }
+
+    function renderBankDisplay(){
+      const bank = getSelectedBank();
+      const holder = $('bankDisplayMain');
+      if(!bank){
+        holder.innerHTML = '<div class="placeholder">Chọn ngân hàng</div>';
+        return;
+      }
+      const logo = escapeHtml(getBankLogo(bank));
+      const shortName = escapeHtml(bank.shortName || bank.name || 'Ngân hàng');
+      const fullName = escapeHtml(bank.name || '');
+      holder.innerHTML = `
+        <img src="${logo}" alt="${shortName} logo" loading="lazy" onerror="handleBankLogoError(this)" />
+        <div class="bank-display-text">
+          <strong>${shortName}</strong>
+          <span>${fullName}</span>
+        </div>
+      `;
+    }
+
+    function renderBankOptions(){
+      const keyword = normalizeText($('bankSearch').value);
+      const currentId = $('bank').value;
+      const list = state.banks.filter(bank => {
+        if(!keyword) return true;
+        const hay = normalizeText(`${bank.shortName || ''} ${bank.name || ''} ${bank.code || ''} ${bank.bin || ''}`);
+        return hay.includes(keyword);
+      });
+      $('bankOptions').innerHTML = list.length ? list.map(bank => {
+        const logo = escapeHtml(getBankLogo(bank));
+        const shortName = escapeHtml(bank.shortName || bank.name || 'Ngân hàng');
+        const fullName = escapeHtml(bank.name || '');
+        return `
+        <button type="button" class="bank-option ${String(bank.id) === String(currentId) ? 'selected' : ''}" data-bank-id="${escapeHtml(bank.id)}">
+          <img src="${logo}" alt="${shortName} logo" loading="lazy" onerror="handleBankLogoError(this)" />
+          <div class="bank-option-text">
+            <strong>${shortName}</strong>
+            <span>${fullName}</span>
+          </div>
+        </button>
+      `}).join('') : '<div class="bank-empty">Không tìm thấy ngân hàng phù hợp.</div>';
+    }
+
+    function openBankDropdown(){
+      $('bankPicker').classList.add('open');
+      $('bankDisplay').setAttribute('aria-expanded', 'true');
+      const bank = getSelectedBank();
+      $('bankSearch').value = bank ? (bank.shortName || bank.name || '') : '';
+      renderBankOptions();
+      setTimeout(() => $('bankSearch').focus(), 0);
+    }
+    function closeBankDropdown(){
+      $('bankPicker').classList.remove('open');
+      $('bankDisplay').setAttribute('aria-expanded', 'false');
+    }
+    function selectBank(bankId){
+      $('bank').value = String(bankId || '');
+      const bank = getSelectedBank();
+      $('bankSearch').value = bank ? (bank.shortName || bank.name || '') : '';
+      renderBankDisplay();
+      renderBankOptions();
+      renderApps();
+      closeBankDropdown();
+    }
+
+    function renderTemplateDisplay(){
+      const selectedBtn = document.querySelector(`[data-template-value="${$('template').value}"]`);
+      if(selectedBtn){
+        const strong = selectedBtn.querySelector('strong')?.textContent || selectedBtn.textContent;
+        $('templateDisplayMain').textContent = strong;
+      }
+      document.querySelectorAll('[data-template-value]').forEach(btn => {
+        btn.classList.toggle('selected', btn.getAttribute('data-template-value') === $('template').value);
+      });
+    }
+    function openTemplateDropdown(){
+      $('templatePicker').classList.add('open');
+      $('templateDisplay').setAttribute('aria-expanded', 'true');
+    }
+    function closeTemplateDropdown(){
+      $('templatePicker').classList.remove('open');
+      $('templateDisplay').setAttribute('aria-expanded', 'false');
+    }
+    function selectTemplate(value){
+      $('template').value = value || 'compact2';
+      renderTemplateDisplay();
+      closeTemplateDropdown();
+    }
+
+    async function loadBanks(){
+      try{
+        const res = await fetch('https://api.vietqr.io/v2/banks');
+        const json = await res.json();
+        const banks = Array.isArray(json.data) ? json.data : [];
+        state.banks = banks.map(bank => ({
+          ...bank,
+          logo: bank.logo || bank.logoUrl || bank.icon || DEFAULT_BANK_LOGO
+        })).sort((a,b) => (a.shortName || a.name || '').localeCompare((b.shortName || b.name || ''), 'vi'));
+        $('bankCountPill').textContent = `${state.banks.length} ngân hàng`;
+        renderBankDisplay();
+        renderBankOptions();
+      }catch{
+        $('bankCountPill').textContent = 'Lỗi tải ngân hàng';
+        $('bankOptions').innerHTML = '<div class="bank-empty">Không tải được danh sách ngân hàng.</div>';
+        showStatus('Không tải được danh sách ngân hàng từ VietQR. Nếu mở bằng file:// thì hãy thử local server.', 'err');
+      }
+    }
+
+    async function loadApps(){
+      try{
+        const isIOS = /iPad|iPhone|iPod/i.test(navigator.userAgent);
+        const endpoint = isIOS ? 'https://api.vietqr.io/v2/ios-app-deeplinks' : 'https://api.vietqr.io/v2/android-app-deeplinks';
+        const res = await fetch(endpoint);
+        const json = await res.json();
+        state.apps = Array.isArray(json.apps) ? json.apps : (Array.isArray(json.data) ? json.data : []);
+        $('appCountPill').textContent = `${state.apps.length} app`;
+        renderBankDisplay();
+        renderBankOptions();
+        renderApps();
+      }catch{
+        $('appCountPill').textContent = 'Lỗi tải app';
+        $('appList').innerHTML = '<div class="hint">Không tải được danh sách app ngân hàng.</div>';
+      }
+    }
+
+    function findBestAppForSelectedBank(){
+      const bank = getSelectedBank();
+      if(!bank) return null;
+      const short = normalizeText(bank.shortName || '');
+      const code = normalizeText(bank.code || '');
+      const full = normalizeText(bank.name || '');
+      return state.apps.find(app => {
+        const hay = normalizeText(`${app.appName || ''} ${app.bankName || ''} ${app.appId || ''}`);
+        return (short && hay.includes(short)) || (code && hay.includes(code)) || (full && hay.includes(full));
+      }) || null;
+    }
+
+    function renderApps(){
+      const keyword = normalizeText($('appSearch').value);
+      const bank = getSelectedBank();
+      const accountNo = sanitizeNumeric($('accountNo').value);
+      const amount = sanitizeNumeric($('amount').value);
+      const addInfo = $('addInfo').value.trim();
+      const accountName = $('accountName').value.trim();
+      const bestApp = findBestAppForSelectedBank();
+
+      const list = state.apps
+        .filter(app => {
+          if(!keyword) return true;
+          const hay = normalizeText(`${app.appName || ''} ${app.bankName || ''} ${app.appId || ''}`);
+          return hay.includes(keyword);
+        })
+        .sort((a,b) => {
+          if(bestApp && a.appId === bestApp.appId) return -1;
+          if(bestApp && b.appId === bestApp.appId) return 1;
+          return (b.monthlyInstall || 0) - (a.monthlyInstall || 0);
+        });
+
+      $('appList').innerHTML = list.map(app => {
+        const link = buildAppLink(app, bank, accountNo, amount, addInfo, accountName);
+        const badge = bestApp && app.appId === bestApp.appId ? '⭐ ' : '';
+        return `
+          <a class="app-item" href="${link}" target="_self" rel="noopener">
+            <img src="${app.appLogo || ''}" alt="${app.appName || 'App'}" loading="lazy" />
+            <div>
+              <div class="name">${badge}${app.appName || 'Không rõ tên app'}</div>
+              <div class="bank">${app.bankName || 'Ngân hàng'}</div>
+            </div>
+          </a>
+        `;
+      }).join('') || '<div class="hint">Không tìm thấy app phù hợp.</div>';
+    }
+
+    function rowMarkup(id, label, value, compact=false){
+      return `
+        <div class="info-card">
+          <div class="info-content">
+            <div class="info-label">${label}</div>
+            <div class="info-value ${compact ? 'compact' : ''}" id="${id}">${value}</div>
+          </div>
+          <button class="copy-btn" type="button" data-copy-target="${id}" aria-label="Copy ${label}">
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="7" width="10" height="12" rx="2"></rect>
+              <rect x="5" y="3" width="10" height="12" rx="2"></rect>
+            </svg>
+            <svg class="check-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2A10 10 0 1 0 12 22A10 10 0 1 0 12 2Z"></path>
+              <path d="M10.4 14.9 7.7 12.2l-1.4 1.4 4.1 4.1 7.3-7.3-1.4-1.4z"></path>
+            </svg>
+          </button>
+        </div>
+      `;
+    }
+
+    function hideResultPanel(){
+      $('resultPanel').classList.remove('show');
+      $('resultEmpty').hidden = false;
+      $('resultMeta').innerHTML = '';
+      $('qrImage').removeAttribute('src');
+      state.lastQR = '';
+    }
+
+    function buildResultData(qrUrl){
+      const bank = getSelectedBank();
+      const accountNo = sanitizeNumeric($('accountNo').value);
+      const accountName = $('accountName').value.trim();
+      const amount = sanitizeNumeric($('amount').value);
+      const addInfo = $('addInfo').value.trim();
+      let html = '';
+      if(bank) html += rowMarkup('outBank','Ngân hàng',`${bank.shortName || bank.name || ''}`,true);
+      if(accountNo) html += rowMarkup('outAccountNo','Số tài khoản',accountNo,true);
+      if(accountName) html += rowMarkup('outAccountName','Tên chủ Tài Khoản',accountName,true);
+      if(amount) html += rowMarkup('outAmount','Số tiền',formatMoney(amount),true);
+      if(addInfo) html += rowMarkup('outAddInfo','Nội dung',addInfo,false);
+      if(qrUrl) html += rowMarkup('outQrLink','Link QR',qrUrl,true);
+      return html;
+    }
+
+    function generateQR(){
+      const bank = getSelectedBank();
+      const accountNo = sanitizeNumeric($('accountNo').value);
+      const accountName = $('accountName').value.trim();
+      const amount = sanitizeNumeric($('amount').value);
+      const addInfo = $('addInfo').value.trim();
+      const template = $('template').value;
+
+      if(!bank) return showStatus('Bạn chưa chọn ngân hàng.', 'err');
+      if(!accountNo) return showStatus('Bạn chưa nhập số tài khoản.', 'err');
+      if(!accountName) return showStatus('Bạn chưa nhập tên chủ tài khoản.', 'err');
+
+      const qrUrl = buildQRUrl(bank, accountNo, amount, addInfo, accountName, template);
+      state.lastQR = qrUrl;
+      $('qrImage').src = qrUrl;
+      $('resultMeta').innerHTML = buildResultData(qrUrl);
+      $('resultEmpty').hidden = true;
+      $('resultPanel').classList.add('show');
+      renderApps();
+      showStatus('Đã tạo mã QR thành công.', 'ok');
+    }
+
+    function fillDemo(){
+      const firstGoodBank = state.banks.find(b => b.shortName === 'Vietcombank') || state.banks[0];
+      if(firstGoodBank) selectBank(firstGoodBank.id);
+      $('accountNo').value = '1051375223';
+      $('accountName').value = 'NGO QUANG DUAN';
+      $('amount').value = '50000';
+      $('addInfo').value = 'DONATE FOR ME';
+      $('template').value = 'compact2';
+      hideResultPanel();
+      renderApps();
+      showStatus('Đã điền dữ liệu mẫu.', 'ok');
+    }
+
+    function clearForm(){
+      $('bank').value = '';
+      $('bankSearch').value = '';
+      renderBankDisplay();
+      renderBankOptions();
+      $('accountNo').value = '';
+      $('accountName').value = '';
+      $('amount').value = '';
+      $('addInfo').value = '';
+      $('template').value = 'compact2';
+      hideResultPanel();
+      renderApps();
+      showStatus('Đã xóa dữ liệu.', 'ok');
+    }
+
+    document.addEventListener('click', async (e) => {
+      const copyBtn = e.target.closest('[data-copy-target]');
+      if(copyBtn){
+        const targetId = copyBtn.getAttribute('data-copy-target');
+        const text = $(targetId)?.textContent?.trim() || '';
+        await copyText(text, copyBtn);
+        return;
+      }
+      const bankOption = e.target.closest('[data-bank-id]');
+      if(bankOption){
+        selectBank(bankOption.getAttribute('data-bank-id'));
+        return;
+      }
+      const templateOption = e.target.closest('[data-template-value]');
+      if(templateOption){
+        selectTemplate(templateOption.getAttribute('data-template-value'));
+        return;
+      }
+      if(!e.target.closest('#bankPicker')) closeBankDropdown();
+      if(!e.target.closest('#templatePicker')) closeTemplateDropdown();
+    });
+
+    $('bankDisplay').addEventListener('click', () => {
+      const isOpen = $('bankPicker').classList.contains('open');
+      if(isOpen) closeBankDropdown(); else openBankDropdown();
+    });
+    $('templateDisplay').addEventListener('click', () => {
+      const isOpen = $('templatePicker').classList.contains('open');
+      if(isOpen) closeTemplateDropdown(); else openTemplateDropdown();
+    });
+    $('bankSearch').addEventListener('input', () => {
+      renderBankOptions();
+      if(!$('bankPicker').classList.contains('open')) openBankDropdown();
+    });
+    $('generateBtn').addEventListener('click', generateQR);
+    $('fillDemoBtn').addEventListener('click', fillDemo);
+    $('clearBtn').addEventListener('click', clearForm);
+    $('appSearch').addEventListener('input', renderApps);
+    $('openSelectedAppBtn').addEventListener('click', () => {
+      const bestApp = findBestAppForSelectedBank();
+      if(!bestApp){
+        showStatus('Chưa tìm thấy app phù hợp với ngân hàng đã chọn.', 'err');
+        return;
+      }
+      const bank = getSelectedBank();
+      location.href = buildAppLink(bestApp, bank, sanitizeNumeric($('accountNo').value), sanitizeNumeric($('amount').value), $('addInfo').value.trim(), $('accountName').value.trim());
+    });
+    $('accountNo').addEventListener('input', renderApps);
+    $('accountName').addEventListener('input', renderApps);
+    $('amount').addEventListener('input', renderApps);
+    $('addInfo').addEventListener('input', renderApps);
+
+    renderTemplateDisplay();
+    Promise.all([loadBanks(), loadApps()]).then(() => hideResultPanel());
+  </script>
+</body>
+</html>
