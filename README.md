@@ -22,7 +22,7 @@
 
 ## 📺 Demo Video
 
-<img src="https://i.imgur.com/3Br4BUh.gif" alt="Bot Demo GIF" width="1000"/>
+<img src="https://files.catbox.moe/tj55em" alt="Bot Demo GIF" width="1000"/>
 
 ---
 
